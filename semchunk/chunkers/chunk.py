@@ -26,3 +26,15 @@ class Chunk:
         """
         enc = get_encoding('cl100k_base')
         return sum(len(enc.encode(split)) for split in self.splits)
+
+    def __repr__(self) -> str:
+        # forming fancy splits list string
+        str_splits = ''
+        for i, split in enumerate(self.splits):
+            str_splits += f'"{split}", '
+        str_splits = str_splits[:-2]
+
+        # final repr template
+        str_template = f'<Chunk size={self.size}, chars={self.chars}, tokens={self.tokens}, splits=[{str_splits}]/>'
+
+        return str_template
