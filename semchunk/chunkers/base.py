@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 
 from chromadb.api.types import EmbeddingFunction
 from ..splitters.base import BaseSplitter
+from .chunk import Chunk
 
 
 class BaseChunker(ABC):
@@ -16,11 +17,11 @@ class BaseChunker(ABC):
             self,
             ef: EmbeddingFunction
     ):
-        self._ef = ef
+        self.ef = ef
 
     @abstractmethod
-    def __call__(self, splits: list[str]) -> list[str]:
+    def __call__(self, splits: list[str]) -> list[Chunk]:
         pass
 
-    def __or__(self, other: Callable | BaseSplitter) -> list[str]:
+    def __or__(self, other: Callable | BaseSplitter) -> list[Chunk]:
         return self.__call__(other.__call__())
