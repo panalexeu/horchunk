@@ -22,6 +22,9 @@ class WindowChunker(BaseChunker):
 
         for sentence in splits:
             res = prev + ' ' + sentence
+            if prev == '':
+                res = sentence
+
             dist = cosine_dist(
                 self.ef([init])[0],
                 self.ef([res])[0]

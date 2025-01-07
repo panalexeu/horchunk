@@ -7,6 +7,10 @@ from semchunk.chunkers import WindowChunker
 def test_win_chunker():
     ef = embedding_functions.DefaultEmbeddingFunction()  # all-MiniLM-L6-v2
     chunker = WindowChunker(ef)
-    splits = ['Hey!', 'How are you?']
-    res = chunker(splits)
-    print(res)
+    splits = ['Hey!', 'Andromeda']
+
+    chunks = chunker(splits)
+    chunks = [chunk.splits[0] for chunk in chunks]
+
+    assert sorted(chunks) == sorted(splits)
+
