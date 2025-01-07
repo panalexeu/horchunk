@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from chromadb.api.types import EmbeddingFunction
+from chromadb import EmbeddingFunction
 
 from .chunk import Chunk
 
