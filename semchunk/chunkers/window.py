@@ -27,8 +27,6 @@ class WindowChunker(BaseChunker):
                 self.ef([res])[0]
             )
 
-            breakpoint()
-
             if dist < self.thresh:
                 print('formed chunk: ', prev)
                 print('brk: ', sentence)
