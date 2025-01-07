@@ -23,6 +23,3 @@ class BaseChunker(ABC):
     @abstractmethod
     def __call__(self, splits: list[str]) -> list[Chunk]:
         pass
-
-    def __or__(self, other: Callable | BaseSplitter) -> list[Chunk]:
-        return self.__call__(other.__call__())
