@@ -39,6 +39,7 @@ class WindowChunker(BaseChunker):
             else:
                 prev = res
 
+        # include last chunk
         if prev not in chunks:
             chunks.append(prev)
 
