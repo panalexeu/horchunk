@@ -1,9 +1,7 @@
-from typing import Callable
 from abc import ABC, abstractmethod
 
 from chromadb.api.types import EmbeddingFunction
 
-from ..splitters.base import BaseSplitter
 from .chunk import Chunk
 
 
