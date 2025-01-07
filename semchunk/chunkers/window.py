@@ -16,14 +16,15 @@ class WindowChunker(BaseChunker):
         self.thresh = thresh
 
     def __call__(self, splits: list[str]) -> list[Chunk]:
-        prev = ''
+        prev = splits[0]
         init = splits[0]
         chunks = []
 
         for sentence in splits:
+            if init == sentence:
+                continue
+
             res = prev + ' ' + sentence
-            if prev == '':
-                res = sentence
 
             dist = cosine_dist(
                 self.ef([init])[0],
