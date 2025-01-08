@@ -104,14 +104,19 @@ class WindowChunker(BaseChunker):
             print(f'dist: {dist}')
             print(f'chunk: [white on green]{chunk.splits[0]}[/white on green]'
                   f'[white on cyan]{' '.join(chunk.splits[1:])}[white on cyan/]')
-            print('=' * 64)
 
             # no need to continue
             if low == high:
                 break
 
             # reading user evaluation
-            input_ = str(input("Type 'k' to raise thresh, or 'j' - to lower it: "))
+            while True:
+                input_ = str(input("Type 'k' to raise thresh, or 'j' - to lower it, then press 'Enter': "))
+                if input_ in ['k', 'j']:
+                    break
+                else:
+                    print("Invalid input, please type 'k' or 'j'")
+            print('=' * 64)
 
             # based on input_ decide what to do next
             match input_:
@@ -121,8 +126,6 @@ class WindowChunker(BaseChunker):
                 # lowering
                 case 'j':
                     high = mid - 1
-                case _:
-                    raise IOError('Irrelevant symbol')
 
         # tuning complete
         print(f'Tuning ended, thresh value: {dist}')
