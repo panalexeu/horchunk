@@ -33,3 +33,13 @@ class BaseChunker(ABC):
         The arguments and return type are flexible to support varied use cases.
         """
         pass
+
+    @abstractmethod
+    def eval(self, *args: Any, **kwargs: Any) -> Any:
+        """
+        Abstract method for evaluating the chunker.
+
+        Subclasses should implement this to define custom evaluation logic.
+        The arguments and return type are flexible to accommodate various evaluation scenarios.
+        """
+        pass
