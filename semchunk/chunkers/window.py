@@ -14,13 +14,15 @@ class WindowChunker(BaseChunker):
     def __init__(
             self,
             ef: EmbeddingFunction,
-            thresh: float = 0.72
+            thresh: float = 0.72,
+            max_chunk_size: int = 6
     ):
         super().__init__(ef)
         self.thresh = thresh
+        self.max_chunk_size = max_chunk_size
 
     def __call__(self, splits: list[str]) -> list[Chunk]:
-        prev = Chunk([splits[0]])
+        chunk = Chunk([splits[0]])
         init = splits[0]
         chunks: list[Chunk] = []
 
@@ -28,30 +30,30 @@ class WindowChunker(BaseChunker):
             if init == sentence:
                 continue
 
-            res = prev.join() + ' ' + sentence
+            res = chunk.join() + ' ' + sentence
 
             dist = cosine_dist(
                 self.ef([init])[0],
                 self.ef([res])[0]
             )
 
-            if dist < self.thresh:
-                print('formed chunk: ', prev)
+            if (dist < self.thresh) or chunk.size == self.max_chunk_size:
+                print('formed chunk: ', chunk)
                 print('brk: ', sentence)
                 print('dist: ', dist)
                 print('=' * 50)
 
-                chunks.append(prev)
-                prev = Chunk([sentence])
+                chunks.append(chunk)
+                chunk = Chunk([sentence])
                 init = sentence
             else:
-                prev.add(res)
+                print(f'skip: {sentence}')
+                chunk.add(sentence)
 
         # include last chunk
-        if prev not in chunks:
-            chunks.append(prev)
+        if chunk not in chunks:
+            chunks.append(chunk)
 
-        # map chunks to list[Chunk]
         return chunks
 
     def tune(self, splits: list[str], depth: int = 3) -> float:
