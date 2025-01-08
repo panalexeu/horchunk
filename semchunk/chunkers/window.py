@@ -22,15 +22,11 @@ class WindowChunker(BaseChunker):
         self.max_chunk_size = max_chunk_size
 
     def __call__(self, splits: list[str]) -> list[Chunk]:
-        cur_chunk = Chunk([splits[0]])
+        cur_chunk = Chunk([])
         init = splits[0]
         chunks: list[Chunk] = []
 
-        for sentence in splits:
-            # skip firs iteration
-            if init == sentence:
-                continue
-
+        for i, sentence in enumerate(splits):
             res = f'{cur_chunk.join()} {sentence}'
 
             dist = cosine_dist(
