@@ -30,7 +30,7 @@ class WindowChunker(BaseChunker):
             if init == sentence:
                 continue
 
-            res = chunk.join() + ' ' + sentence
+            res = f'{chunk.join()} {sentence}'
 
             dist = cosine_dist(
                 self.ef([init])[0],
