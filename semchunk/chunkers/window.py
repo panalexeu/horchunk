@@ -53,12 +53,12 @@ class WindowChunker(BaseChunker):
         # map chunks to list[Chunk]
         return [Chunk(splits=[chunk]) for chunk in chunks]
 
-    def tune(self, splits: list[str], depth: int = 6) -> float:
+    def tune(self, splits: list[str], depth: int = 3) -> float:
         """
-        Tunes window chunker threshold, by calculating the distance for a bunch of chunks with the ``depth`` splits size.
+        Tunes the window chunker threshold by calculating the distance for a set of chunks with the given ``depth`` split size.
 
-        Chunks are then sorted with the relevant distances. With the binary search algorithm you decide wich thresh
-        should be included, by analyzing created chunks and distance within it.
+        The chunks are sorted based on the calculated distances. Using a binary search algorithm, the threshold is determined
+        by analyzing the created chunks and the distances within them.
         """
 
         if len(splits) < depth:
@@ -95,7 +95,7 @@ class WindowChunker(BaseChunker):
         low = 0
         high = len(sorted_keys) - 1
         dist = None
-        while low < high:
+        while low <= high:
             mid = (low + high) // 2
             dist = sorted_keys[mid]
             chunk = chunks[dist]
@@ -105,6 +105,11 @@ class WindowChunker(BaseChunker):
             print(f'chunk: [white on green]{chunk.splits[0]}[/white on green]'
                   f'[white on cyan]{' '.join(chunk.splits[1:])}[white on cyan/]')
             print('=' * 64)
+
+            # no need to continue
+            if low == high:
+                break
+
             # reading user evaluation
             input_ = str(input("Type 'k' to raise thresh, or 'j' - to lower it: "))
 
