@@ -69,7 +69,7 @@ class WindowChunker(BaseChunker):
 
         # consecutively forming key: [distance], value: [chunk] dictionary
         chunks = dict()
-        for i in range(0, len(splits), depth):
+        for i in range(len(splits)):
             init = splits[i]
             chunk = Chunk(splits[i:i + depth])
             res = chunk.join()
