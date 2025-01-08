@@ -14,21 +14,21 @@ class WindowChunker(BaseChunker):
     def __init__(
             self,
             ef: EmbeddingFunction,
-            thresh: float = 0.9
+            thresh: float = 0.72
     ):
         super().__init__(ef)
         self.thresh = thresh
 
     def __call__(self, splits: list[str]) -> list[Chunk]:
-        prev = splits[0]
+        prev = Chunk([splits[0]])
         init = splits[0]
-        chunks = []
+        chunks: list[Chunk] = []
 
         for sentence in splits:
             if init == sentence:
                 continue
 
-            res = prev + ' ' + sentence
+            res = prev.join() + ' ' + sentence
 
             dist = cosine_dist(
                 self.ef([init])[0],
@@ -42,17 +42,17 @@ class WindowChunker(BaseChunker):
                 print('=' * 50)
 
                 chunks.append(prev)
-                prev = sentence
+                prev = Chunk([sentence])
                 init = sentence
             else:
-                prev = res
+                prev.add(res)
 
         # include last chunk
         if prev not in chunks:
             chunks.append(prev)
 
         # map chunks to list[Chunk]
-        return [Chunk(splits=[chunk]) for chunk in chunks]
+        return chunks
 
     def tune(self, splits: list[str], depth: int = 3) -> float:
         """
