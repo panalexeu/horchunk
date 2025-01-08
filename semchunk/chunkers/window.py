@@ -1,6 +1,7 @@
 import math
 
 from chromadb import EmbeddingFunction
+from rich import print
 
 from .chunk import Chunk
 from .base import BaseChunker
@@ -70,24 +71,27 @@ class WindowChunker(BaseChunker):
         chunks = dict()
         for i in range(0, len(splits), depth):
             init = splits[i]
-            res = ' '.join(splits[i:i + depth])
+            chunk = Chunk(splits[i:i + depth])
+            res = chunk.join()
 
             dist = cosine_dist(
                 self.ef([init])[0],
                 self.ef([res])[0]
             )
 
-            chunks[dist] = res
+            chunks[dist] = chunk
 
         # binary search, with the user evaluation
         sorted_keys = sorted(chunks.keys())
 
+        # print init tuning params
         print(f'{len(sorted_keys)} chunks formed')
         print(f'Values range: [{sorted_keys[0]} ... {sorted_keys[-1]}]')
-        time_complex = int(math.log(len(sorted_keys), 2))
-        print(f'Steps to tune: {time_complex}')
-        print('-' * 16)
+        o_n = int(math.log(len(sorted_keys), 2))
+        print(f'Steps to tune: {o_n}')
+        print('-' * 32)
 
+        # binary search
         low = 0
         high = len(sorted_keys) - 1
         dist = None
@@ -96,17 +100,21 @@ class WindowChunker(BaseChunker):
             dist = sorted_keys[mid]
             chunk = chunks[dist]
 
-            # reading user evaluation
+            # printing current chunk info
             print(f'dist: {dist}')
-            print(f'chunk: {chunk}')
-            input_ = str(input("Type 'h' to raise thresh, or 'l' - to lower it: "))
-            print('=' * 32)
+            print(f'chunk: [white on green]{chunk.splits[0]}[/white on green]'
+                  f'[white on cyan]{' '.join(chunk.splits[1:])}[white on cyan/]')
+            print('=' * 64)
+            # reading user evaluation
+            input_ = str(input("Type 'k' to raise thresh, or 'j' - to lower it: "))
 
             # based on input_ decide what to do next
             match input_:
-                case 'h':
+                # raising
+                case 'k':
                     low = mid + 1
-                case 'l':
+                # lowering
+                case 'j':
                     high = mid - 1
                 case _:
                     raise IOError('Irrelevant symbol')
