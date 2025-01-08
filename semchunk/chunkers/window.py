@@ -1,4 +1,5 @@
 import math
+from typing import Any
 
 from chromadb import EmbeddingFunction
 from rich import print
@@ -131,3 +132,6 @@ class WindowChunker(BaseChunker):
         print(f'Tuning ended, thresh value: {dist}')
 
         return dist
+
+    def eval(self, *args: Any, **kwargs: Any) -> Any:
+        raise NotImplementedError
