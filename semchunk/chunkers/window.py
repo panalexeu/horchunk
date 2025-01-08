@@ -129,7 +129,8 @@ class WindowChunker(BaseChunker):
                     high = mid - 1
 
         # tuning complete
-        print(f'Tuning ended, thresh value: {dist}')
+        trunc_dist = f'{dist:.3f}'[:4]  # truncating the distance without rounding it
+        print(f'Tuning ended, thresh value: {dist} = {trunc_dist}')
 
         return dist
 
