@@ -5,9 +5,9 @@ class Chunk:
 
     def __init__(
             self,
-            splits: list[str]
+            splits: list[str] = None
     ):
-        self.splits = splits
+        self.splits = splits if splits else list()
 
     @property
     def size(self) -> int:
@@ -26,6 +26,12 @@ class Chunk:
         """
         enc = get_encoding('cl100k_base')
         return sum(len(enc.encode(split)) for split in self.splits)
+
+    def add(self, split: str):
+        self.splits.append(split)
+
+    def join(self) -> str:
+        return ' '.join(self.splits)
 
     def __repr__(self) -> str:
         # forming fancy splits list string
