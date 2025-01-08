@@ -22,37 +22,37 @@ class WindowChunker(BaseChunker):
         self.max_chunk_size = max_chunk_size
 
     def __call__(self, splits: list[str]) -> list[Chunk]:
-        chunk = Chunk([splits[0]])
+        cur_chunk = Chunk([splits[0]])
         init = splits[0]
         chunks: list[Chunk] = []
 
         for sentence in splits:
+            # skip firs iteration
             if init == sentence:
                 continue
 
-            res = f'{chunk.join()} {sentence}'
+            res = f'{cur_chunk.join()} {sentence}'
 
             dist = cosine_dist(
                 self.ef([init])[0],
                 self.ef([res])[0]
             )
 
-            if (dist < self.thresh) or chunk.size == self.max_chunk_size:
-                print('formed chunk: ', chunk)
+            if (dist < self.thresh) or (cur_chunk.size >= self.max_chunk_size):
+                print('formed chunk: ', cur_chunk)
                 print('brk: ', sentence)
                 print('dist: ', dist)
                 print('=' * 50)
 
-                chunks.append(chunk)
-                chunk = Chunk([sentence])
+                chunks.append(cur_chunk)
+                cur_chunk = Chunk([sentence])
                 init = sentence
             else:
-                print(f'skip: {sentence}')
-                chunk.add(sentence)
+                cur_chunk.add(sentence)
 
         # include last chunk
-        if chunk not in chunks:
-            chunks.append(chunk)
+        if cur_chunk not in chunks:
+            chunks.append(cur_chunk)
 
         return chunks
 
