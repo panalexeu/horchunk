@@ -11,7 +11,7 @@ class DistanceStrategy(ABC):
         pass
 
 
-class Cosine(DistanceStrategy):
+class CosineDistance(DistanceStrategy):
 
     def calc(self, embed1: ndarray, embed2: ndarray) -> float:
         cosine = SimilarityFunction.to_similarity_fn('cosine')

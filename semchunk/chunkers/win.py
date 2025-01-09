@@ -1,13 +1,13 @@
 import math
-from typing import Any
+from enum import Enum
+from typing import Any, Callable
 
 from chromadb import EmbeddingFunction
 from rich import print
 
-from .chunk import Chunk
 from .base import BaseChunker
-from .utils import cosine_dist
-from .dist import DistanceStrategy
+from .chunk import Chunk
+from .dist import DistanceStrategy, CosineDistance
 
 
 class WindowChunker(BaseChunker):
@@ -15,7 +15,7 @@ class WindowChunker(BaseChunker):
     def __init__(
             self,
             ef: EmbeddingFunction,
-            df: DistanceStrategy,
+            df: DistanceStrategy = CosineDistance(),
             thresh: float = 0.72,
             max_chunk_size: int = 6
     ):
@@ -54,6 +54,61 @@ class WindowChunker(BaseChunker):
 
         return chunks
 
+    class SearchCmd(Enum):
+        HIGH = 0
+        LOW = 1
+
+    def _bin_search(
+            self,
+            distances: list[float],
+            chunks: dict[float, Chunk],
+            callback: Callable[[int, list[float], dict[float, Chunk]], SearchCmd]
+    ) -> int:
+        """
+        Performs a binary search on a sorted ``distances`` list using a callback.
+
+        :param distances: a sorted list of distances to search.
+        :param chunks:  a dictionary mapping distances to ``Chunk`` objects.
+        :param callback: function that returns ``SearchCmd`` enum to direct the binary search.
+        :return: the index ``mid`` of the result in ``distances``.
+        """
+        low = 0
+        high = len(distances) - 1
+        mid = None
+        while low <= high:
+            mid = (low + high) // 2
+
+            cmd = callback(mid, distances, chunks)
+            match cmd:
+                case self.SearchCmd.HIGH:
+                    low = mid + 1
+                case self.SearchCmd.LOW:
+                    high = mid - 1
+
+        return mid
+
+    def _man_input(self, mid: int, distances: list[float], chunks: dict[float, Chunk]) -> SearchCmd:
+        # retrieving distance and relevant chunk value
+        dist = distances[mid]
+        chunk = chunks[dist]
+
+        # printing current chunk info
+        print(f'dist: {dist}')
+        print(f'chunk: [white on green]{chunk.splits[0]}[/white on green]'
+              f'[white on cyan]{' '.join(chunk.splits[1:])}[white on cyan/]')
+
+        # reading the user input
+        while True:
+            input_ = str(input("Type 'k' to raise thresh, or 'j' - to lower it, then press 'Enter': "))
+            match input_:
+                case 'k':
+                    return self.SearchCmd.HIGH
+                case 'j':
+                    return self.SearchCmd.LOW
+                case _:
+                    print("Invalid input, please type 'k' or 'j'")
+            print('=' * 64)
+
     def tune(self, splits: list[str], depth: int = 3) -> float:
         """
         Tunes the window chunker threshold by calculating the distance for a set of chunks with the given ``depth`` split size.
@@ -82,57 +137,27 @@ class WindowChunker(BaseChunker):
 
             chunks[dist] = chunk
 
-        # binary search, with the user evaluation
+        # binary search
         sorted_keys = sorted(chunks.keys())
-
-        # print init tuning params
+        # print init tuning binary search params
         print(f'{len(sorted_keys)} chunks formed')
         print(f'Values range: [{sorted_keys[0]} ... {sorted_keys[-1]}]')
         o_n = int(math.log(len(sorted_keys), 2))
         print(f'Steps to tune: {o_n}')
         print('-' * 32)
 
-        # binary search
-        low = 0
-        high = len(sorted_keys) - 1
-        dist = None
-        while low <= high:
-            mid = (low + high) // 2
-            dist = sorted_keys[mid]
-            chunk = chunks[dist]
+        res_indx = self._bin_search(
+            distances=sorted_keys,
+            chunks=chunks,
+            callback=self._man_input
+        )
+        res = sorted_keys[res_indx]
 
-            # printing current chunk info
-            print(f'dist: {dist}')
-            print(f'chunk: [white on green]{chunk.splits[0]}[/white on green]'
-                  f'[white on cyan]{' '.join(chunk.splits[1:])}[white on cyan/]')
+        # search complete
+        trunc_dist = f'{res:.3f}'[:4]  # truncating the distance without rounding it
+        print(f'Tuning ended, thresh value: {res} = {trunc_dist}')
 
-            # no need to continue
-            if low == high:
-                break
-
-            # reading user evaluation
-            while True:
-                input_ = str(input("Type 'k' to raise thresh, or 'j' - to lower it, then press 'Enter': "))
-                if input_ in ['k', 'j']:
-                    break
-                else:
-                    print("Invalid input, please type 'k' or 'j'")
-            print('=' * 64)
-
-            # based on input_ decide what to do next
-            match input_:
-                # raising
-                case 'k':
-                    low = mid + 1
-                # lowering
-                case 'j':
-                    high = mid - 1
-
-        # tuning complete
-        trunc_dist = f'{dist:.3f}'[:4]  # truncating the distance without rounding it
-        print(f'Tuning ended, thresh value: {dist} = {trunc_dist}')
-
-        return dist
+        return res
 
     def eval(self, *args: Any, **kwargs: Any) -> Any:
         raise NotImplementedError
