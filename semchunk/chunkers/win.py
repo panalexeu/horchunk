@@ -7,6 +7,7 @@ from rich import print
 from .chunk import Chunk
 from .base import BaseChunker
 from .utils import cosine_dist
+from .dist import DistanceStrategy
 
 
 class WindowChunker(BaseChunker):
@@ -14,10 +15,11 @@ class WindowChunker(BaseChunker):
     def __init__(
             self,
             ef: EmbeddingFunction,
+            df: DistanceStrategy,
             thresh: float = 0.72,
             max_chunk_size: int = 6
     ):
-        super().__init__(ef)
+        super().__init__(ef, df)
         self.thresh = thresh
         self.max_chunk_size = max_chunk_size
 
@@ -32,7 +34,7 @@ class WindowChunker(BaseChunker):
             embed_init = self.ef([init])[0]
             embed_res = self.ef([res])[0]
 
-            dist = cosine_dist(embed_init, embed_res)
+            dist = self.df.calc(embed_init, embed_res)
 
             if (dist < self.thresh) or (cur_chunk.size >= self.max_chunk_size):
                 print('formed chunk: ', cur_chunk)
@@ -73,7 +75,7 @@ class WindowChunker(BaseChunker):
             chunk = Chunk(splits[i:i + depth])
             res = chunk.join()
 
-            dist = cosine_dist(
+            dist = self.df.calc(
                 self.ef([init])[0],
                 self.ef([res])[0]
             )

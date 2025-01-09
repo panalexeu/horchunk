@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from chromadb import EmbeddingFunction
 
 from .chunk import Chunk
+from .dist import DistanceStrategy
 
 
 class BaseChunker(ABC):
@@ -16,9 +17,11 @@ class BaseChunker(ABC):
 
     def __init__(
             self,
-            ef: EmbeddingFunction
+            ef: EmbeddingFunction,
+            df: DistanceStrategy
     ):
         self.ef = ef
+        self.df = df
 
     @abstractmethod
     def __call__(self, splits: list[str]) -> list[Chunk]:
