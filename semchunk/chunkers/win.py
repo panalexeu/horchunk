@@ -29,10 +29,10 @@ class WindowChunker(BaseChunker):
         for i, sentence in enumerate(splits):
             res = f'{cur_chunk.join()} {sentence}'
 
-            dist = cosine_dist(
-                self.ef([init])[0],
-                self.ef([res])[0]
-            )
+            embed_init = self.ef([init])[0]
+            embed_res = self.ef([res])[0]
+
+            dist = cosine_dist(embed_init, embed_res)
 
             if (dist < self.thresh) or (cur_chunk.size >= self.max_chunk_size):
                 print('formed chunk: ', cur_chunk)
