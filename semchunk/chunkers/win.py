@@ -5,7 +5,7 @@ from typing import Any, Callable
 from chromadb import EmbeddingFunction
 from rich import print
 
-from .base import BaseChunker
+from .base import BaseChunker, BaseTuner
 from .chunk import Chunk
 from .dist import DistanceStrategy, CosineDistance
 
@@ -54,6 +54,25 @@ class WindowChunker(BaseChunker):
 
         return chunks
 
+    def eval(self, *args: Any, **kwargs: Any) -> Any:
+        raise NotImplementedError
+
+
+class WindowTuner(BaseTuner):
+    """
+    Tunes the window chunker threshold by calculating the distance for a set of chunks with the given ``depth`` split size.
+
+    The chunks are sorted based on the calculated distances. Using a binary search algorithm, the threshold is determined
+    by analyzing the created chunks and the distances within them.
+    """
+
+    def __init__(
+            self,
+            ef: EmbeddingFunction,
+            df: DistanceStrategy = CosineDistance(),
+    ):
+        super().__init__(ef, df)
+
     class SearchCmd(Enum):
         HIGH = 0
         LOW = 1
@@ -87,43 +106,14 @@ class WindowChunker(BaseChunker):
 
         return mid
 
-    def _man_input(self, mid: int, distances: list[float], chunks: dict[float, Chunk]) -> SearchCmd:
-        # retrieving distance and relevant chunk value
-        dist = distances[mid]
-        chunk = chunks[dist]
-
-        # printing current chunk info
-        print(f'dist: {dist}')
-        print(f'chunk: [white on green]{chunk.splits[0]}[/white on green]'
-              f'[white on cyan]{' '.join(chunk.splits[1:])}[white on cyan/]')
-
-        # reading the user input
-        while True:
-            input_ = str(input("Type 'k' to raise thresh, or 'j' - to lower it, then press 'Enter': "))
-            match input_:
-                case 'k':
-                    return self.SearchCmd.HIGH
-                case 'j':
-                    return self.SearchCmd.LOW
-                case _:
-                    print("Invalid input, please type 'k' or 'j'")
-            print('=' * 64)
-
-    def tune(self, splits: list[str], depth: int = 3) -> float:
-        """
-        Tunes the window chunker threshold by calculating the distance for a set of chunks with the given ``depth`` split size.
-
-        The chunks are sorted based on the calculated distances. Using a binary search algorithm, the threshold is determined
-        by analyzing the created chunks and the distances within them.
-        """
-
+    def __call__(self, splits: list[str], depth: int = 3) -> float:
         if len(splits) < depth:
             raise ValueError(
                 "The length of 'splits' is smaller than the defined depth. "
                 "Increase the size of the 'splits' list or decrease the 'depth' parameter."
             )
 
-        # consecutively forming key: [distance], value: [chunk] dictionary
+            # consecutively forming key: [distance], value: [chunk] dictionary
         chunks = dict()
         for i in range(len(splits)):
             init = splits[i]
@@ -159,5 +149,24 @@ class WindowChunker(BaseChunker):
 
         return res
 
-    def eval(self, *args: Any, **kwargs: Any) -> Any:
-        raise NotImplementedError
+    def _man_input(self, mid: int, distances: list[float], chunks: dict[float, Chunk]) -> SearchCmd:
+        # retrieving distance and relevant chunk value
+        dist = distances[mid]
+        chunk = chunks[dist]
+
+        # printing current chunk info
+        print(f'dist: {dist}')
+        print(f'chunk: [white on green]{chunk.splits[0]}[/white on green]'
+              f'[white on cyan]{' '.join(chunk.splits[1:])}[white on cyan/]')
+
+        # reading the user input
+        while True:
+            input_ = str(input("Type 'k' to raise thresh, or 'j' - to lower it, then press 'Enter': "))
+            match input_:
+                case 'k':
+                    return self.SearchCmd.HIGH
+                case 'j':
+                    return self.SearchCmd.LOW
+                case _:
+                    print("Invalid input, please type 'k' or 'j'")
+            print('=' * 64)

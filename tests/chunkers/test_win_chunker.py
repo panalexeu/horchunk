@@ -1,8 +1,7 @@
 import pytest
 from chromadb.utils import embedding_functions
-from rich import print
 
-from semchunk.chunkers import WindowChunker
+from semchunk.chunkers import WindowChunker, WindowTuner
 
 
 @pytest.fixture
@@ -20,6 +19,6 @@ def test_successfully_chunks(win_chunker):
     assert sorted(chunks) == sorted(splits)
 
 
-def test_tune_is_not_performed_on_splits_list_smaller_then_depth(win_chunker):
+def test_tune_is_not_performed_on_splits_list_smaller_then_depth():
     with pytest.raises(ValueError):
-        win_chunker.tune(splits=['hey', 'hey'], depth=3)
+        WindowTuner(embedding_functions.DefaultEmbeddingFunction()).__call__(splits=['hey', 'hey'], depth=3)

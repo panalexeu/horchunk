@@ -47,6 +47,14 @@ class BaseTuner(ABC):
     It is recommended to implement ``BaseTuner`` in the same file where the relevant ``BaseChunker`` is defined.
     """
 
+    def __init__(
+            self,
+            ef: EmbeddingFunction,
+            df: DistanceStrategy
+    ):
+        self.ef = ef
+        self.df = df
+
     @abstractmethod
     def __call__(self, *args, **kwargs) -> Any:
         pass
