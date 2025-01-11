@@ -12,7 +12,6 @@ class BaseChunker(ABC):
     Abstract base class for chunkers.
 
     To create a custom chunker, implement the ``__call__`` method.
-    Optionally, override the ``tune`` method if tuning functionality is required.
     """
 
     def __init__(
@@ -28,16 +27,6 @@ class BaseChunker(ABC):
         pass
 
     @abstractmethod
-    def tune(self, *args: Any, **kwargs: Any) -> Any:
-        """
-        Abstract method for tuning the chunker.
-
-        Subclasses should implement this to define custom tuning logic.
-        The arguments and return type are flexible to support varied use cases.
-        """
-        pass
-
-    @abstractmethod
     def eval(self, *args: Any, **kwargs: Any) -> Any:
         """
         Abstract method for evaluating the chunker.
@@ -45,4 +34,19 @@ class BaseChunker(ABC):
         Subclasses should implement this to define custom evaluation logic.
         The arguments and return type are flexible to accommodate various evaluation scenarios.
         """
+        pass
+
+
+class BaseTuner(ABC):
+    """
+    Abstract base class for chunker tuners.
+
+    Subclasses should implement the ``__call__`` method to define custom tuning logic.
+    The arguments and return type of the ``__call__`` method are flexible to support varied use cases.
+
+    It is recommended to implement ``BaseTuner`` in the same file where the relevant ``BaseChunker`` is defined.
+    """
+
+    @abstractmethod
+    def __call__(self, *args, **kwargs) -> Any:
         pass
