@@ -7,7 +7,7 @@ from semchunk.chunkers import WindowChunker
 
 @pytest.fixture
 def win_chunker():
-    ef = embedding_functions.DefaultEmbeddingFunction() # all-MiniLM-L6-v2
+    ef = embedding_functions.DefaultEmbeddingFunction()  # all-MiniLM-L6-v2
     return WindowChunker(ef)
 
 
