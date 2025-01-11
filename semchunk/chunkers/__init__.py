@@ -1,6 +1,6 @@
 from .base import BaseChunker
 from .chunk import Chunk
-from .window import WindowChunker
+from .win import WindowChunker
 
 __all__ = [
     'BaseChunker',

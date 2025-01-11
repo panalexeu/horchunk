@@ -12,6 +12,6 @@ class SentenceSplitter(BaseSplitter):
         sentences = []
         for paragraph in paragraphs:
             split_ = re.split(r'(?<=[.!?])\s+', paragraph)
-            sentences.extend(split_)
+            sentences.extend([sentence for sentence in split_ if sentence.strip()])
 
         return sentences
