@@ -1,6 +1,16 @@
 from tiktoken import get_encoding
 
-from semchunk.splitters import SentenceSplitter, TokenSplitter
+from semchunk.splitters import (
+    ParagraphSplitter,
+    SentenceSplitter,
+    TokenSplitter
+)
+
+
+def test_paragraph_splitter():
+    text = 'hey.\nhey?\n\nhey!\n\n\n'
+    splitter = ParagraphSplitter(text)
+    assert ['hey.', 'hey?', 'hey!'] == splitter()
 
 
 def test_sentence_splitter():

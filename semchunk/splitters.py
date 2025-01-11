@@ -14,11 +14,20 @@ class BaseSplitter(ABC):
         pass
 
 
-class SentenceSplitter(BaseSplitter):
+class ParagraphSplitter(BaseSplitter):
+    """Splits the text into paragraphs"""
+
+    def __call__(self) -> list[str]:
+        splits = split(r'\n+', self.text)
+        filtered = list(filter(lambda item: bool(item.strip()), splits))  # filtering empty lines
+        return filtered
+
+
+class SentenceSplitter(ParagraphSplitter):
     """Splits the text into paragraphs first, then into sentences using punctuation marks ``.!?``."""
 
     def __call__(self) -> list[str]:
-        paragraphs = split(r'\n+', self.text)
+        paragraphs = super().__call__()
 
         sentences = []
         for paragraph in paragraphs:
@@ -28,7 +37,7 @@ class SentenceSplitter(BaseSplitter):
         return sentences
 
 
-class TokenSplitter(BaseSplitter):
+class TokenSplitter(ParagraphSplitter):
     """
     Splits the text into paragraphs first. If a resulting paragraph exceeds the specified number of tokens,
     it is further split into smaller chunks, each of ``chunk_size`` tokens.
@@ -51,7 +60,7 @@ class TokenSplitter(BaseSplitter):
         self.encoding = encoding
 
     def __call__(self) -> list[str]:
-        paragraphs = split(r'\n+', self.text)
+        paragraphs = super().__call__()
 
         splits_ = []
         for paragraph in paragraphs:
