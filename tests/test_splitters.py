@@ -3,7 +3,6 @@ from tiktoken import get_encoding
 from semchunk.splitters import SentenceSplitter, TokenSplitter
 
 
-
 def test_sentence_splitter():
     text = 'hey.  hey?   hey!'
     splitter = SentenceSplitter(text)

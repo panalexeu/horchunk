@@ -1,8 +1,31 @@
-import re
+from re import split
+from abc import ABC, abstractmethod
 
-from tiktoken import get_encoding, Encoding
+from tiktoken import Encoding, get_encoding
 
-from .base import BaseSplitter
+
+class BaseSplitter(ABC):
+
+    def __init__(self, text: str):
+        self.text = text
+
+    @abstractmethod
+    def __call__(self) -> list[str]:
+        pass
+
+
+class SentenceSplitter(BaseSplitter):
+    """Splits the text into paragraphs first, then into sentences using punctuation marks ``.!?``."""
+
+    def __call__(self) -> list[str]:
+        paragraphs = split(r'\n+', self.text)
+
+        sentences = []
+        for paragraph in paragraphs:
+            split_ = split(r'(?<=[.!?])\s+', paragraph)
+            sentences.extend([sentence for sentence in split_ if sentence.strip()])
+
+        return sentences
 
 
 class TokenSplitter(BaseSplitter):
@@ -28,7 +51,7 @@ class TokenSplitter(BaseSplitter):
         self.encoding = encoding
 
     def __call__(self) -> list[str]:
-        paragraphs = re.split(r'\n+', self.text)
+        paragraphs = split(r'\n+', self.text)
 
         splits_ = []
         for paragraph in paragraphs:
