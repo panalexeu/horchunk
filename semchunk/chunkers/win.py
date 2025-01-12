@@ -7,6 +7,8 @@ from chromadb import EmbeddingFunction
 from langchain_core.language_models import BaseChatModel
 from langchain_core.prompts import ChatPromptTemplate
 from rich import print
+from langchain.output_parsers import PydanticOutputParser
+from langchain_core.pydantic_v1 import BaseModel, Field
 
 from .base import BaseChunker, BaseTuner
 from .chunk import Chunk
@@ -176,20 +178,55 @@ class WindowTuner(BaseTuner):
 
 
 class LLMWindowTuner(WindowTuner):
+    class Response(BaseModel):
+        answer: bool = Field(description='Semantic meaning text classification result.')
+
+    parser_ = PydanticOutputParser(pydantic_object=Response)
+    prompt = ChatPromptTemplate([
+        'system', 'You are a helpful AI assistant, that classifies the provided text based on the semantic meaning '
+                  'similarity. If the text is uniform, and shares the same semantic meaning return "true". Otherwise, '
+                  'return "false".\n'
+                  '"""\n'
+                  '{text}\n'
+                  '"""'
+    ], parital_variables={'format_instructions': parser_.get_format_instructions()})
 
     def __init__(
             self,
             ef: EmbeddingFunction,
-            chat_model: BaseChatModel,
+            model: BaseChatModel,
             df: DistanceStrategy = CosineDistance(),
             llm_calls: int = 3
     ):
         super().__init__(ef, df)
         self.llm_calls = llm_calls
-        self.chat_model = chat_model
+        self.model = model
 
     @override
     def _input(self, mid: int, distances: list[float], chunks: dict[float, Chunk]) -> WindowTuner.SearchCmd:
-        prompt = ChatPromptTemplate([
-            'system', 'You are a genius ...'
-        ])
+        # retrieving distance and relevant chunk value
+        dist = distances[mid]
+        chunk = chunks[dist]
+
+        # printing current chunk info
+        print(f'dist: {dist}')
+        print(f'chunk: [white on green]{chunk.splits[0]}[/white on green]'
+              f'[white on cyan]{' '.join(chunk.splits[1:])}[white on cyan/]')
+
+        # forming requests to llm
+        chain = self.prompt | self.model | self.parser_
+        responses: list[bool] = []
+        for _ in range(self.llm_calls):
+            response = chain.invoke(dict(text=chunk.join))
+            responses.append(response)
+
+        # true => lower, false => raise
+        lower_votes = sum(responses)
+        raise_votes = self.llm_calls - lower_votes
+        action = self.SearchCmd.LOW if lower_votes >= raise_votes else self.SearchCmd.HIGH
+        print(f'{lower_votes} llms vote for lowering the thresh')
+        print(f'{raise_votes} llms vote for raising')
+        print(f'result: {'lower' if action.value else 'raise'}')  # SearchCmd.LOW = 1, SearchCmd.HIGH = 0
+
+        return action
+
