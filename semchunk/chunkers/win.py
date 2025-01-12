@@ -1,8 +1,11 @@
 import math
 from enum import Enum
 from typing import Any, Callable
+from overrides import override
 
 from chromadb import EmbeddingFunction
+from langchain_core.language_models import BaseChatModel
+from langchain_core.prompts import ChatPromptTemplate
 from rich import print
 
 from .base import BaseChunker, BaseTuner
@@ -139,7 +142,7 @@ class WindowTuner(BaseTuner):
         res_indx = self._bin_search(
             distances=sorted_keys,
             chunks=chunks,
-            callback=self._man_input
+            callback=self._input
         )
         res = sorted_keys[res_indx]
 
@@ -149,7 +152,7 @@ class WindowTuner(BaseTuner):
 
         return res
 
-    def _man_input(self, mid: int, distances: list[float], chunks: dict[float, Chunk]) -> SearchCmd:
+    def _input(self, mid: int, distances: list[float], chunks: dict[float, Chunk]) -> SearchCmd:
         # retrieving distance and relevant chunk value
         dist = distances[mid]
         chunk = chunks[dist]
@@ -170,3 +173,23 @@ class WindowTuner(BaseTuner):
                 case _:
                     print("Invalid input, please type 'k' or 'j'")
             print('=' * 64)
+
+
+class LLMWindowTuner(WindowTuner):
+
+    def __init__(
+            self,
+            ef: EmbeddingFunction,
+            chat_model: BaseChatModel,
+            df: DistanceStrategy = CosineDistance(),
+            llm_calls: int = 3
+    ):
+        super().__init__(ef, df)
+        self.llm_calls = llm_calls
+        self.chat_model = chat_model
+
+    @override
+    def _input(self, mid: int, distances: list[float], chunks: dict[float, Chunk]) -> WindowTuner.SearchCmd:
+        prompt = ChatPromptTemplate([
+            'system', 'You are a genius ...'
+        ])
