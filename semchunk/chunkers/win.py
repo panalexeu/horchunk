@@ -5,10 +5,10 @@ from overrides import override
 
 from chromadb import EmbeddingFunction
 from langchain_core.language_models import BaseChatModel
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts import PromptTemplate
 from rich import print
 from langchain.output_parsers import PydanticOutputParser
-from langchain_core.pydantic_v1 import BaseModel, Field
+from pydantic import BaseModel, Field
 
 from .base import BaseChunker, BaseTuner
 from .chunk import Chunk
@@ -182,14 +182,20 @@ class LLMWindowTuner(WindowTuner):
         answer: bool = Field(description='Semantic meaning text classification result.')
 
     parser_ = PydanticOutputParser(pydantic_object=Response)
-    prompt = ChatPromptTemplate([
-        'system', 'You are a helpful AI assistant, that classifies the provided text based on the semantic meaning '
-                  'similarity. If the text is uniform, and shares the same semantic meaning return "true". Otherwise, '
-                  'return "false".\n'
-                  '"""\n'
-                  '{text}\n'
-                  '"""'
-    ], parital_variables={'format_instructions': parser_.get_format_instructions()})
+    prompt_text = """You are a helpful AI assistant, that classifies the provided text based on the semantic meaning similiarity. 
+    If the text is uniform, and shares the same semantic meaning return "true". Otherwise, return "false".
+    '''
+    {text}
+    '''
+    {format_instructions}
+    """
+    prompt = PromptTemplate(
+        template=prompt_text,
+        input_variables=['text'],
+        partial_variables={'format_instructions': parser_.get_format_instructions()}
+    )
+
+    breakpoint()
 
     def __init__(
             self,
@@ -217,7 +223,7 @@ class LLMWindowTuner(WindowTuner):
         chain = self.prompt | self.model | self.parser_
         responses: list[bool] = []
         for _ in range(self.llm_calls):
-            response = chain.invoke(dict(text=chunk.join))
+            response = chain.invoke({'text': chunk.join()})
             responses.append(response)
 
         # true => lower, false => raise
@@ -227,6 +233,6 @@ class LLMWindowTuner(WindowTuner):
         print(f'{lower_votes} llms vote for lowering the thresh')
         print(f'{raise_votes} llms vote for raising')
         print(f'result: {'lower' if action.value else 'raise'}')  # SearchCmd.LOW = 1, SearchCmd.HIGH = 0
+        input('Press ENTER to continue: ')
 
         return action
-
