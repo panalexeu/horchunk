@@ -1,7 +1,7 @@
 import pytest
 from chromadb.utils import embedding_functions
 
-from semchunk.chunkers import WindowChunker, WindowTuner
+from horchunk.chunkers import WindowChunker, WindowTuner
 
 
 @pytest.fixture
