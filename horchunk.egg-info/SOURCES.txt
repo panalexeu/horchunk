@@ -1,0 +1,17 @@
+README.md
+pyproject.toml
+horchunk/__init__.py
+horchunk/splitters.py
+horchunk.egg-info/PKG-INFO
+horchunk.egg-info/SOURCES.txt
+horchunk.egg-info/dependency_links.txt
+horchunk.egg-info/requires.txt
+horchunk.egg-info/top_level.txt
+horchunk/chunkers/__init__.py
+horchunk/chunkers/base.py
+horchunk/chunkers/chunk.py
+horchunk/chunkers/dist.py
+horchunk/chunkers/win.py
+horchunk/filters/__init__.py
+horchunk/filters/base.py
+tests/test_splitters.py

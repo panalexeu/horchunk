@@ -195,8 +195,6 @@ class LLMWindowTuner(WindowTuner):
         partial_variables={'format_instructions': parser_.get_format_instructions()}
     )
 
-    breakpoint()
-
     def __init__(
             self,
             ef: EmbeddingFunction,
