@@ -1,6 +1,6 @@
 from tiktoken import get_encoding
 
-from semchunk.splitters import (
+from horchunk.splitters import (
     ParagraphSplitter,
     SentenceSplitter,
     TokenSplitter
