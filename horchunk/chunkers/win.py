@@ -82,6 +82,17 @@ class WindowTuner(BaseTuner):
         HIGH = 0
         LOW = 1
 
+    @staticmethod
+    def _print_chunk_info(mid: int, distances: list[float], chunks: dict[float, Chunk]) -> None:
+        # retrieving distance and relevant chunk value
+        dist = distances[mid]
+        chunk = chunks[dist]
+
+        # printing current chunk info
+        print(f'dist: {dist}')
+        print(f'chunk: [white on green]{chunk.splits[0]}[/white on green]'
+              f'[white on cyan]{' '.join(chunk.splits[1:])}[white on cyan/]')
+
     def _bin_search(
             self,
             distances: list[float],
@@ -98,9 +109,13 @@ class WindowTuner(BaseTuner):
         """
         low = 0
         high = len(distances) - 1
-        mid = None
         while low <= high:
             mid = (low + high) // 2
+
+            # handling the last iteration
+            if mid == low or mid == high:
+                self._print_chunk_info(mid, distances, chunks)
+                return mid
 
             cmd = callback(mid, distances, chunks)
             match cmd:
@@ -109,7 +124,19 @@ class WindowTuner(BaseTuner):
                 case self.SearchCmd.LOW:
                     high = mid - 1
 
-        return mid
+    def _input(self, mid: int, distances: list[float], chunks: dict[float, Chunk]) -> SearchCmd:
+        self._print_chunk_info(mid, distances, chunks)
+
+        while True:
+            input_ = str(input("Type 'k' to raise thresh, or 'j' - to lower it, then press 'Enter': "))
+            match input_:
+                case 'k':
+                    return self.SearchCmd.HIGH
+                case 'j':
+                    return self.SearchCmd.LOW
+                case _:
+                    print("Invalid input, please type 'k' or 'j'")
+            print('=' * 64)
 
     def __call__(self, splits: list[str], depth: int = 3) -> float:
         if len(splits) < depth:
@@ -153,28 +180,6 @@ class WindowTuner(BaseTuner):
         print(f'Tuning ended, thresh value: {res} = {trunc_dist}')
 
         return res
-
-    def _input(self, mid: int, distances: list[float], chunks: dict[float, Chunk]) -> SearchCmd:
-        # retrieving distance and relevant chunk value
-        dist = distances[mid]
-        chunk = chunks[dist]
-
-        # printing current chunk info
-        print(f'dist: {dist}')
-        print(f'chunk: [white on green]{chunk.splits[0]}[/white on green]'
-              f'[white on cyan]{' '.join(chunk.splits[1:])}[white on cyan/]')
-
-        # reading the user input
-        while True:
-            input_ = str(input("Type 'k' to raise thresh, or 'j' - to lower it, then press 'Enter': "))
-            match input_:
-                case 'k':
-                    return self.SearchCmd.HIGH
-                case 'j':
-                    return self.SearchCmd.LOW
-                case _:
-                    print("Invalid input, please type 'k' or 'j'")
-            print('=' * 64)
 
 
 class LLMWindowTuner(WindowTuner):

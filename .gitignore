@@ -7,3 +7,4 @@ creds
 *.pyc
 dist/
 horchunk.egg-info/
+docs/.ipynb_checkpoints/
