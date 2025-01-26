@@ -5,3 +5,5 @@ main.py
 datasets/
 creds
 *.pyc
+dist/
+horchunk.egg-info/
