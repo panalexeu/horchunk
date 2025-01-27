@@ -1,8 +1,10 @@
 import math
+import logging
 from enum import Enum
 from typing import Any, Callable
 from overrides import override
 
+from tqdm import tqdm
 from chromadb import EmbeddingFunction
 from langchain_core.language_models import BaseChatModel
 from langchain_core.prompts import PromptTemplate
@@ -13,6 +15,8 @@ from pydantic import BaseModel, Field
 from .base import BaseChunker, BaseTuner
 from .chunk import Chunk
 from .dist import DistanceStrategy, CosineDistance
+
+logger = logging.getLogger(__name__)
 
 
 class WindowChunker(BaseChunker):
@@ -28,12 +32,12 @@ class WindowChunker(BaseChunker):
         self.thresh = thresh
         self.max_chunk_size = max_chunk_size
 
-    def __call__(self, splits: list[str]) -> list[Chunk]:
+    def __call__(self, splits: list[str], verbose: bool = False) -> list[Chunk]:
         cur_chunk = Chunk([])
         init = splits[0]
         chunks: list[Chunk] = []
 
-        for i, sentence in enumerate(splits):
+        for i, sentence in tqdm(enumerate(splits), total=len(splits)):
             res = f'{cur_chunk.join()} {sentence}'
 
             embed_init = self.ef([init])[0]
@@ -42,10 +46,10 @@ class WindowChunker(BaseChunker):
             dist = self.df.calc(embed_init, embed_res)
 
             if (dist < self.thresh) or (cur_chunk.size >= self.max_chunk_size):
-                print('formed chunk: ', cur_chunk)
-                print('brk: ', sentence)
-                print('dist: ', dist)
-                print('=' * 50)
+                if verbose:
+                    print('formed chunk: ', cur_chunk)
+                    print('brk: ', sentence)
+                    print('dist: ', dist)
 
                 chunks.append(cur_chunk)
                 cur_chunk = Chunk([sentence])
