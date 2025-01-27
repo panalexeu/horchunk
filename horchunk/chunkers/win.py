@@ -148,7 +148,7 @@ class WindowTuner(BaseTuner):
 
             # consecutively forming key: [distance], value: [chunk] dictionary
         chunks = dict()
-        for i in range(len(splits)):
+        for i in tqdm(range(len(splits))):
             init = splits[i]
             chunk = Chunk(splits[i:i + depth])
             res = chunk.join()
