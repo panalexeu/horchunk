@@ -1,5 +1,4 @@
 import math
-import logging
 from enum import Enum
 from typing import Any, Callable
 from overrides import override
@@ -15,8 +14,6 @@ from pydantic import BaseModel, Field
 from .base import BaseChunker, BaseTuner
 from .chunk import Chunk
 from .dist import DistanceStrategy, CosineDistance
-
-logger = logging.getLogger(__name__)
 
 
 class WindowChunker(BaseChunker):
