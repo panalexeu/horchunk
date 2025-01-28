@@ -8,3 +8,4 @@ creds
 dist/
 horchunk.egg-info/
 docs/.ipynb_checkpoints/
+docs/aurelio-chunkers-eval.ipynb

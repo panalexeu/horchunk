@@ -165,7 +165,7 @@ class WindowTuner(BaseTuner):
         # print init tuning binary search params
         print(f'{len(sorted_keys)} chunks formed')
         print(f'Values range: [{sorted_keys[0]} ... {sorted_keys[-1]}]')
-        o_n = int(math.log(len(sorted_keys), 2))
+        o_n = math.log(len(sorted_keys), 2)
         print(f'Steps to tune: {o_n}')
         print('-' * 32)
 
