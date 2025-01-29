@@ -9,3 +9,4 @@ dist/
 horchunk.egg-info/
 docs/.ipynb_checkpoints/
 docs/aurelio-chunkers-eval.ipynb
+docs/token.ipynb
