@@ -16,12 +16,12 @@ different chunking methods.
 
 #### Semantic Splitting 
 
-Initial text is divided firstly in paragraphs with regexp `\n+`, then in sentences based on the delimiters: `!?.`.
-After retrieving divided sentences the algorithm logic starts.
+Initial text is first divided into paragraphs using the regular expression `\n+`, then into sentences based on the delimiters: `!?.`.  
+After splitting the text into sentences, the core logic of the algorithm begins.
 
-The algorithm logic is based on the sliding window technique with a dynamically changing size. 
-The algorithm sets the pointer $l$ to the first sentence, the pointer $r$ to the second, and then iteratively moves 
-the pointer $r$, expanding the window $W[l,r]$. The sentence at the pointer $l$ and the window $W[l,r]$ are 
+The algorithm is based on the sliding window technique with a dynamically changing size.  
+It sets the pointer $l$ to the first sentence, the pointer $r$ to the second, and then iteratively moves  
+the pointer $r$, expanding the window $W[l,r]$. The sentence at pointer $l$ and the window $W[l,r]$ are  
 transformed into vectors using the embedding model $E$: 
 
 $$
@@ -31,13 +31,13 @@ v_w = E\left(W[l, r]\right).
 \end{cases}
 $$
 
-Then distance $d$ between vectors $v_l$ and $v_w$ is calculated using the cosine similarity formula: 
+Then the distance $d$ between vectors $v_l$ and $v_w$ is calculated using the cosine similarity formula: 
 
 $$
 d = \frac{v_l \cdot v_w}{\|v_l\| \cdot \|v_w\|}.
 $$
 
-If distance $d$ is less that the specified threshold $t$: the document $W[l,r)$ is generated. 
+If the distance $d$ is less than the specified threshold $t$, the document $W[l,r)$ is generated. 
 
 Then the $l$ and $r$ pointers are updated as follows: 
 
@@ -48,7 +48,7 @@ r = r + 1.
 \end{cases}
 $$
 
-The algorithm continues to work until: 
+The algorithm continues until: 
 
 $$
 r \leq i, 
@@ -56,7 +56,7 @@ $$
 
 where $i$ is the number of sentences. 
 
-The chunking forming logic described above is depicted in figure 1-2.
+The chunking logic described above is depicted in Figures 1–2.
 
 ![fig_1](./images/chunking_1.png)
 
@@ -64,28 +64,28 @@ Fig. 1. Finding the cosine similarity between $S_l$ and the window $W[l,r]$
 
 ![fig_2](./images/chunking_2.png)
 
-Fig. 2. Formation of document $W[l,r]$ when passing the set threshold $t=0.85$ by distance $t$
+Fig. 2. Formation of document $W[l,r]$ when exceeding the threshold $t = 0.85$
 
-When expanding window $W[l,r]$, it is cler how the semantic meaning in form of vectors obtained using the
-embedding model gradually "drifts" from sentence $S_l$ to the sequentially formed windows 
+When expanding the window $W[l,r]$, it is clear how the semantic meaning—in the form of vectors obtained using the  
+embedding model—gradually "drifts" from sentence $S_l$ to the sequentially formed windows  
 $W[l,r]$, $W[l,r+i]$ (Fig. 3). 
 
 ![Semantic drift](./images/semantic_drift.png) 
 
-Fig. 3. Drift of semantic meaning when the window expands
+Fig. 3. Drift of semantic meaning as the window expands
 
-Adding a new sentence moves the window $W[l, r]$ away from sentence $S_l$. If the new sentence $S_r$ is very 
-semantically  distant  from  $S_l$, the cosine similarity will immediately move away. If it is close, the similarity 
-will not change much.
+Adding a new sentence moves the window $W[l, r]$ further from sentence $S_l$. If the new sentence $S_r$ is very  
+semantically distant from $S_l$, the cosine similarity will decrease significantly. If it is close, the similarity  
+will change only slightly.
 
-Using  a  high  threshold  value  of  $t=0.95$, depending on the text, will lead to smaller documents with 1–2 
-sentences, while a low threshold of $t=0.72$ – to larger ones. 
+Using a high threshold value of $t = 0.95$, depending on the text, will lead to smaller documents with 1–2  
+sentences, while a low threshold of $t = 0.72$ will result in larger ones. 
 
-For additional control over the documents being created, the $α$ parameter is used. It controls the maximum number of 
-sentences in a document to prevent the creation of excessively large documents with semantically similar sentences. 
+For additional control over the documents being created, the $α$ parameter is used. It limits the maximum number of  
+sentences in a document to prevent the creation of excessively large documents with semantically similar sentences.  
 Such situations can occur when processing lists or tables with similar values.
 
-For more details, check the [research paper](https://journals.uran.ua/eejet/article/view/326177/317250). 
+For more details, check the [research paper](https://journals.uran.ua/eejet/article/view/326177/317250).
 
 #### Binary Search Tuning 
 
