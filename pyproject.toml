@@ -7,8 +7,6 @@ name = "horchunk"
 version = "0.0.1"
 requires-python = ">=3.12"
 dependencies = [
-	"langchain == 0.3.14",
-	"langchain-openai == 0.3.0",
 	"sentence-transformers == 3.3.1",
 	"tiktoken == 0.8.0",
 	"chromadb == 0.6.2",
