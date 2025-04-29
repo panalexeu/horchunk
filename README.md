@@ -68,8 +68,7 @@ Fig. 1. Finding the cosine similarity between $S_l$ and the window $W[l,r]$
 Fig. 2. Formation of document $W[l,r]$ when exceeding the threshold $t = 0.85$
 
 When expanding the window $W[l,r]$, it is clear how the semantic meaning - in the form of vectors obtained using the 
-embedding model - gradually "drifts" from sentence $S_l$ to the sequentially formed windows  
-$W[l,r]$, $W[l,r+i]$ (Fig. 3). 
+embedding model - gradually "drifts" from sentence $S_l$ to the sequentially formed windows $W[l,r]$, $W[l,r+i]$ (Fig. 3). 
 
 ![semantic_drift](./images/semantic_drift.png) 
 
