@@ -12,9 +12,9 @@ I would also like to acknowledge the work of Brandon Smith and Anton Troynikov f
 during the method's development. In addition to the framework, their work presents an overall study of the quality of 
 different chunking methods.
 
-### Proposed method 
+### Implemented Method
 
-#### Semantic splitting 
+#### Semantic Splitting 
 
 Initial text is divided firstly in paragraphs with regexp `\n+`, then in sentences based on the delimiters: `!?.`.
 After retrieving divided sentences the algorithm logic starts.
@@ -27,14 +27,14 @@ transformed into vectors using the embedding model $E$:
 $$
 \begin{cases}
 v_l = E(S_l), \\
-v_w = E\left(W[l, r]\right)
+v_w = E\left(W[l, r]\right).
 \end{cases}
 $$
 
 Then distance $d$ between vectors $v_l$ and $v_w$ is calculated using the cosine similarity formula: 
 
 $$
-d = \frac{v_l \cdot v_w}{\|v_l\| \cdot \|v_w\|},
+d = \frac{v_l \cdot v_w}{\|v_l\| \cdot \|v_w\|}.
 $$
 
 If distance $d$ is less that the specified threshold $t$: the document $W[l,r)$ is generated. 
@@ -59,16 +59,20 @@ where $i$ is the number of sentences.
 The chunking forming logic described above is depicted in figure 1-2.
 
 ![fig_1](./images/chunking_1.png)
+
 Fig. 1. Finding the cosine similarity between $S_l$ and the window $W[l,r]$
 
 ![fig_2](./images/chunking_2.png)
+
 Fig. 2. Formation of document $W[l,r]$ when passing the set threshold $t=0.85$ by distance $t$
 
 When expanding window $W[l,r]$, it is cler how the semantic meaning in form of vectors obtained using the
 embedding model gradually "drifts" from sentence $S_l$ to the sequentially formed windows 
 $W[l,r]$, $W[l,r+i]$ (Fig. 3). 
 
-![Semantic drift](./images/semantic_drift.png) Fig. 3. Drift of semantic meaning when the window expands
+![Semantic drift](./images/semantic_drift.png) 
+
+Fig. 3. Drift of semantic meaning when the window expands
 
 Adding a new sentence moves the window $W[l, r]$ away from sentence $S_l$. If the new sentence $S_r$ is very 
 semantically  distant  from  $S_l$, the cosine similarity will immediately move away. If it is close, the similarity 
@@ -83,8 +87,7 @@ Such situations can occur when processing lists or tables with similar values.
 
 For more details, check the [research paper](https://journals.uran.ua/eejet/article/view/326177/317250). 
 
-#### Binary search tuning 
-
+#### Binary Search Tuning 
 
 ### Benchmarks
 
