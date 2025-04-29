@@ -70,7 +70,7 @@ When expanding the window $W[l,r]$, it is clear how the semantic meaning—in th
 embedding model—gradually "drifts" from sentence $S_l$ to the sequentially formed windows  
 $W[l,r]$, $W[l,r+i]$ (Fig. 3). 
 
-![Semantic drift](./images/semantic_drift.png) 
+![semantic_drift](./images/semantic_drift.png) 
 
 Fig. 3. Drift of semantic meaning as the window expands
 
@@ -87,7 +87,53 @@ Such situations can occur when processing lists or tables with similar values.
 
 For more details, check the [research paper](https://journals.uran.ua/eejet/article/view/326177/317250).
 
-#### Binary Search Tuning 
+#### Binary Search Threshold Tuning 
+
+The developed adjustment algorithm is based on the binary search algorithm. The source text is divided into paragraphs
+and then into sentences just like at the start of `Semantic Splitting` algorithm.
+
+Next, based on the specified size of the static window $m$, divided sentences are sequentially processed and chunks of 
+text are formed from – sentences:
+
+$$
+C_i = \{s_t, s_{t+1}, \ldots, s_{t+m-1}\}.
+$$
+
+For each obtained chunk $C_i$, the first sentence $C_i1$  and  the entire chunk $C_i$  are  transformed  into  vectors  
+using the  embedding model $E$:
+
+$$
+\begin{cases}
+v_l = E(C_l), \\
+v_c = E(C_i).
+\end{cases}
+$$
+
+Next, distances $d_i$ between $v_l$ and $v_c$ is found using cosine similarity.
+
+A dictionary is formed from obtained distances and chunks:
+
+$$
+\mathbf{D} = \{(d_1, C_1), (d_2, C_2), \ldots, (d_i, C_i)\}.
+$$
+
+The created dictionary $D$ is sorted in ascending order based on distances $d_i$. 
+
+After  receiving  the  sorted  dictionary  $D$, the binary search algorithm is launched with a human evaluation. 
+The evaluation is performed by entering a command in the terminal to increase or decrease the threshold value. 
+If the generated chunk with a given distance is semantically complete in the human opinion, the threshold is decreased. 
+If the generated chunk is semantical-ly different, it is increased. After the evaluation is complete, the found 
+distance is returned, the number is limited to two digits after the decimal point. The found value is the threshold $t$ 
+(Fig. 4).
+
+![tuning](./images/tuning.png)
+
+Fig. 4. The process of finding the threshold $t$ using an assessment from a person.
+
+Using the binary search-based tuning, the threshold value tof the cosine similarity can be adjusted based on the data 
+that will be split. In addition, since the static window size of m sentences is set in the process of forming 
+dictionary D, the tuning finds  the  minimum  threshold  value  for  forming  semantically  complete documents of $m$ 
+sentences or more. 
 
 ### Benchmarks
 
