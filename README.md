@@ -21,10 +21,9 @@ different chunking methods.
 Initial text is first divided into paragraphs using the regular expression `\n+`, then into sentences based on the delimiters: `!?.`.  
 After splitting the text into sentences, the core logic of the algorithm begins.
 
-The algorithm is based on the sliding window technique with a dynamically changing size.  
-It sets the pointer $l$ to the first sentence, the pointer $r$ to the second, and then iteratively moves  
-the pointer $r$, expanding the window $W[l,r]$. The sentence at pointer $l$ and the window $W[l,r]$ are  
-transformed into vectors using the embedding model $E$: 
+The algorithm is based on the sliding window technique with a dynamically changing size.  It sets the pointer $l$ to the
+first sentence, the pointer $r$ to the second, and then iteratively moves the pointer $r$, expanding the window $W[l,r]$. 
+The sentence at pointer $l$ and the window $W[l,r]$ are transformed into vectors using the embedding model $E$: 
 
 $$
 \begin{cases}
@@ -68,7 +67,7 @@ Fig. 1. Finding the cosine similarity between $S_l$ and the window $W[l,r]$
 
 Fig. 2. Formation of document $W[l,r]$ when exceeding the threshold $t = 0.85$
 
-When expanding the window $W[l,r]$, it is clear how the semantic meaning - in the form of vectors obtained using the  
+When expanding the window $W[l,r]$, it is clear how the semantic meaning - in the form of vectors obtained using the 
 embedding model - gradually "drifts" from sentence $S_l$ to the sequentially formed windows  
 $W[l,r]$, $W[l,r+i]$ (Fig. 3). 
 
@@ -76,32 +75,32 @@ $W[l,r]$, $W[l,r+i]$ (Fig. 3).
 
 Fig. 3. Drift of semantic meaning as the window expands
 
-Adding a new sentence moves the window $W[l, r]$ further from sentence $S_l$. If the new sentence $S_r$ is very  
-semantically distant from $S_l$, the cosine similarity will decrease significantly. If it is close, the similarity  
+Adding a new sentence moves the window $W[l, r]$ further from sentence $S_l$. If the new sentence $S_r$ is very 
+semantically distant from $S_l$, the cosine similarity will decrease significantly. If it is close, the similarity 
 will change only slightly.
 
-Using a high threshold value of $t = 0.95$, depending on the text, will lead to smaller documents with 1–2  
-sentences, while a low threshold of $t = 0.72$ will result in larger ones. 
+Using a high threshold value of $t = 0.95$, depending on the text, will lead to smaller documents with 1–2 sentences, 
+while a low threshold of $t = 0.72$ will result in larger ones. 
 
-For additional control over the documents being created, the $α$ parameter is used. It limits the maximum number of  
-sentences in a document to prevent the creation of excessively large documents with semantically similar sentences.  
+For additional control over the documents being created, the $α$ parameter is used. It limits the maximum number of
+sentences in a document to prevent the creation of excessively large documents with semantically similar sentences.
 Such situations can occur when processing lists or tables with similar values.
 
 For more details, check the [research paper](https://journals.uran.ua/eejet/article/view/326177/317250).
 
 #### Binary Search Threshold Tuning 
 
-The developed adjustment algorithm is based on the binary search algorithm. The source text is divided into paragraphs  
+The developed adjustment algorithm is based on the binary search algorithm. The source text is divided into paragraphs 
 and then into sentences, just like at the start of the `Semantic Splitting` algorithm.
 
-Next, based on the specified size of the static window $m$, the divided sentences are sequentially processed and chunks of  
+Next, based on the specified size of the static window $m$, the divided sentences are sequentially processed and chunks of
 text are formed from $m$ sentences:
 
 $$
 C_i = \{s_t, s_{t+1}, \ldots, s_{t+m-1}\}.
 $$
 
-For each obtained chunk $C_i$, the first sentence $C_l$ and the entire chunk $C_i$ are transformed into vectors  
+For each obtained chunk $C_i$, the first sentence $C_l$ and the entire chunk $C_i$ are transformed into vectors
 using the embedding model $E$:
 
 $$
@@ -121,20 +120,19 @@ $$
 
 The created dictionary $D$ is sorted in ascending order based on the distances $d_i$. 
 
-After receiving the sorted dictionary $D$, the binary search algorithm is launched with human evaluation.  
-The evaluation is performed by entering a command in the terminal to increase or decrease the threshold value.  
-If the generated chunk with a given distance is semantically complete in the human's opinion, the threshold is decreased.  
-If the generated chunk is semantically different, it is increased. After the evaluation is complete, the identified  
+After receiving the sorted dictionary $D$, the binary search algorithm is launched with human evaluation.
+The evaluation is performed by entering a command in the terminal to increase or decrease the threshold value.
+If the generated chunk with a given distance is semantically complete in the human's opinion, the threshold is decreased.
+If the generated chunk is semantically different, it is increased. After the evaluation is complete, the identified 
 distance is returned, rounded to two decimal places. This final value is taken as the threshold $t$ (Fig. 4).
 
 ![tuning](./images/tuning.png)
 
 Fig. 4. The process of finding the threshold $t$ using human evaluation.
 
-Using binary search-based tuning, the threshold value of the cosine similarity can be adjusted based on the data  
-to be split. In addition, since the static window size of $m$ sentences is set during the formation of  
-dictionary $D$, the tuning process finds the minimum threshold value for forming semantically complete  
-documents of $m$ sentences or more. 
+Using binary search-based tuning, the threshold value of the cosine similarity can be adjusted based on the data 
+to be split. In addition, since the static window size of $m$ sentences is set during the formation of dictionary $D$, 
+the tuning process finds the minimum threshold value for forming semantically complete documents of $m$ sentences or more. 
 
 For more details, check the [research paper](https://journals.uran.ua/eejet/article/view/326177/317250).
 
