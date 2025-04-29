@@ -116,12 +116,12 @@ Next, the distance $d_i$ between $v_l$ and $v_c$ is computed using cosine simila
 A dictionary is formed from the obtained distances and chunks:
 
 $$
-\mathbf{D} = \{(d_1, C_1), (d_2, C_2), \ldots, (d_i, C_i)\}.
+D = \{(d_1, C_1), (d_2, C_2), \ldots, (d_i, C_i)\}.
 $$
 
-The created dictionary $\mathbf{D}$ is sorted in ascending order based on the distances $d_i$. 
+The created dictionary $D$ is sorted in ascending order based on the distances $d_i$. 
 
-After receiving the sorted dictionary $\mathbf{D}$, the binary search algorithm is launched with human evaluation.  
+After receiving the sorted dictionary $D$, the binary search algorithm is launched with human evaluation.  
 The evaluation is performed by entering a command in the terminal to increase or decrease the threshold value.  
 If the generated chunk with a given distance is semantically complete in the human's opinion, the threshold is decreased.  
 If the generated chunk is semantically different, it is increased. After the evaluation is complete, the identified  
@@ -133,7 +133,7 @@ Fig. 4. The process of finding the threshold $t$ using human evaluation.
 
 Using binary search-based tuning, the threshold value of the cosine similarity can be adjusted based on the data  
 to be split. In addition, since the static window size of $m$ sentences is set during the formation of  
-dictionary $\mathbf{D}$, the tuning process finds the minimum threshold value for forming semantically complete  
+dictionary $D$, the tuning process finds the minimum threshold value for forming semantically complete  
 documents of $m$ sentences or more. 
 
 For more details, check the [research paper](https://journals.uran.ua/eejet/article/view/326177/317250).
