@@ -12,6 +12,8 @@ I would also like to acknowledge the work of Brandon Smith and Anton Troynikov f
 during the method's development. In addition to the framework, their work presents an overall study of the quality of 
 different chunking methods.
 
+### Benchmarks
+
 ### Implemented Method
 
 #### Semantic Splitting 
@@ -131,11 +133,12 @@ distance is returned, the number is limited to two digits after the decimal poin
 Fig. 4. The process of finding the threshold $t$ using an assessment from a person.
 
 Using the binary search-based tuning, the threshold value tof the cosine similarity can be adjusted based on the data 
-that will be split. In addition, since the static window size of m sentences is set in the process of forming 
-dictionary D, the tuning finds  the  minimum  threshold  value  for  forming  semantically  complete documents of $m$ 
+that will be split. In addition, since the static window size of $m$ sentences is set in the process of forming 
+dictionary $D$, the tuning finds  the  minimum  threshold  value  for  forming  semantically  complete documents of $m$ 
 sentences or more. 
 
-### Benchmarks
+For more details, check the [research paper](https://journals.uran.ua/eejet/article/view/326177/317250).
+
 
 ### Installation
 
