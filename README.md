@@ -14,6 +14,10 @@ different chunking methods.
 
 ### Proposed method 
 
+![Chunking](./images/chunking.png)
+
+![Semantic drift](./images/semantic_drift.png)
+
 ### Benchmarks
 
 ### Installation
