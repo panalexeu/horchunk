@@ -5,7 +5,7 @@ parameter for the cosine similarity threshold, proposed in this
 [research paper](https://journals.uran.ua/eejet/article/view/326177/317250).
 
 The method was primarily inspired by the percentile-based semantic chunking method presented by Greg Kamradt in the 
-[5 Levels Of Text Splitting](https://github.com/FullStackRetrieval-com/RetrievalTutorials/blob/main/tutorials/LevelsOfTextSplitting/5_Levels_Of_Text_Splitting.ipynb) notebook.
+[5 Levels Of Text Splitting notebook](https://github.com/FullStackRetrieval-com/RetrievalTutorials/blob/main/tutorials/LevelsOfTextSplitting/5_Levels_Of_Text_Splitting.ipynb).
 
 I would also like to acknowledge the work of Brandon Smith and Anton Troynikov for the development of the 
 [Chunking Evaluation Framework](https://research.trychroma.com/evaluating-chunking) for RAG systems, which was used 
@@ -14,9 +14,30 @@ different chunking methods.
 
 ### Proposed method 
 
+#### Semantic splitting 
+
+Initial text is divided firstly in paragraphs with regexp `\n+`, then in sentences based on the delimiters: `!?.`.
+After retrieving divided sentences the algorithm logic starts.
+
+The algorithm logic is based on the sliding window technique with a dynamically changing size. 
+The algorithm sets the pointer `l` to the first sentence, the pointer `r` to the second, and then iteratively moves 
+the pointer `r`, expanding the window `W[l,r]`. The sentence at the pointer `l` and the window `W[l,r]` are 
+transformed into vectors using the embedding model `E`: 
+
+$$
+\begin{cases}
+v_l = E(S_l), \\
+v_w = E\left(W[l, r]\right)
+\end{cases}
+$$
+
 ![Chunking](./images/chunking.png)
 
 ![Semantic drift](./images/semantic_drift.png)
+
+#### Binary search tuning 
+
+
 
 ### Benchmarks
 
