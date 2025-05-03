@@ -19,4 +19,4 @@ dependencies = [
 ]
 
 [tool.setuptools]
-package-dir = {"" = "horchunk"}
+packages = ["horchunk"]
