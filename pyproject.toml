@@ -1,14 +1,14 @@
 [build-system]
-requires = ["setuptools == 75.8.0"]
+requires = ["setuptools == 80.3.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "horchunk"
 version = "0.0.1"
+authors = [{ name='Oleksii Horchynskyi', email='oleksahorch@gmail.com' }]
+license = "MIT"
 requires-python = ">=3.12"
 dependencies = [
-	"langchain == 0.3.14",
-	"langchain-openai == 0.3.0",
 	"sentence-transformers == 3.3.1",
 	"tiktoken == 0.8.0",
 	"chromadb == 0.6.2",
@@ -18,3 +18,5 @@ dependencies = [
 	"tqdm == 4.67.1"
 ]
 
+[tool.setuptools]
+package-dir = {"" = "horchunk"}
