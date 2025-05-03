@@ -12,6 +12,68 @@ I would also like to acknowledge the work of Brandon Smith and Anton Troynikov f
 during the method's development. In addition to the framework, their work presents an overall study of the quality of 
 different chunking methods.
 
+### Installation
+
+To install the package, run: 
+
+```bash
+pip install "git+https://github.com/panalexeu/horchunk.git"
+```
+
+### Usage Example 
+
+```python
+from chromadb.utils import embedding_functions
+from horchunk.chunkers import WindowChunker
+from horchunk.splitters import SentenceSplitter
+
+ef = embedding_functions.SentenceTransformerEmbeddingFunction(model_name="all-MiniLM-L6-v2", device='cuda')
+chunker = WindowChunker(ef)
+
+text = """Joshua Graham, also known as the Burned Man and formerly known as the Malpais Legate, is a Mormon missionary from the settlement of New Canaan and a co-founder of Caesar's Legion as well as its first legate. 
+After three decades of service in the Legion, helping Caesar carry out his conquest of the former state of Arizona and much of the former American Southwest, Graham's strategic loss in 2277 to the New California Republic at the First Battle of Hoover Dam resulted in Caesar punishing him by being set on fire and thrown into the Grand Canyon, only to survive. 
+When Caesar retaliated by sending the White Legs raiders to raze New Canaan and chase the survivors into Zion Canyon in 2281, Graham rallied the Dead Horses tribe as their war-chief to protect Zion and atone for his bloodstained past. He appears as the central character in the Fallout: New Vegas add-on Honest Hearts and is mentioned in Fallout: New Vegas and its add-on Lonesome Road."""
+
+splitter = SentenceSplitter(text)
+splits = splitter()
+print(splits)
+# [
+#     "Joshua Graham, also known as the Burned Man and formerly known as the Malpais Legate, is a Mormon missionary 
+# from the settlement of New Canaan and a co-founder of Caesar's Legion as well as its first legate.",
+#     "After three decades of service in the Legion, helping Caesar carry out his conquest of the former state of 
+# Arizona and much of the former American Southwest, Graham's strategic loss in 2277 to the New California Republic 
+# at the First Battle of Hoover Dam resulted in Caesar punishing him by being set on fire and thrown into the Grand 
+# Canyon, only to survive.",
+#     'When Caesar retaliated by sending the White Legs raiders to raze New Canaan and chase the survivors into Zion 
+# Canyon in 2281, Graham rallied the Dead Horses tribe as their war-chief to protect Zion and atone for his 
+# bloodstained past.',
+#     'He appears as the central character in the Fallout: New Vegas add-on Honest Hearts and is mentioned in 
+# Fallout: New Vegas and its add-on Lonesome Road.'
+# ]
+
+print(chunker(splits))
+# [
+#     <Chunk size=3, chars=800, tokens=171, splits=["Joshua Graham, also known as the Burned Man and formerly known 
+# as the Malpais Legate, is a Mormon missionary from the settlement of New Canaan and a co-founder of Caesar's Legion
+# as well as its first legate.", "After three decades of service in the Legion, helping Caesar carry out his conquest
+# of the former state of Arizona and much of the former American Southwest, Graham's strategic loss in 2277 to the 
+# New California Republic at the First Battle of Hoover Dam resulted in Caesar punishing him by being set on fire and
+# thrown into the Grand Canyon, only to survive.", "When Caesar retaliated by sending the White Legs raiders to raze 
+# New Canaan and chase the survivors into Zion Canyon in 2281, Graham rallied the Dead Horses tribe as their 
+# war-chief to protect Zion and atone for his bloodstained past."]/>,
+#     <Chunk size=1, chars=151, tokens=33, splits=["He appears as the central character in the Fallout: New Vegas 
+# add-on Honest Hearts and is mentioned in Fallout: New Vegas and its add-on Lonesome Road."]/>
+# ]
+```
+
+### Docs
+
+The process of method benchmarking is demonstrated in [evaluation.ipynb](./docs/evaluation.ipynb).
+
+The process of binary search-based method tuning on data is demonstrated in [tuning.ipynb](./docs/tuning.ipynb).
+
+The usage example is also provided as [notebook](./docs/usage.ipynb).
+
 ### Benchmarks
 
 The benchmarking was conducted using the framework proposed in the [Chunking Evaluation Framework](https://research.trychroma.com/evaluating-chunking). Part of the results for other splitting algorithms were also taken from this work.
@@ -155,13 +217,3 @@ to be split. In addition, since the static window size of $m$ sentences is set d
 the tuning process finds the minimum threshold value for forming semantically complete documents of $m$ sentences or more. 
 
 For more details, check the [research paper](https://journals.uran.ua/eejet/article/view/326177/317250).
-
-### Installation
-
-To install the package, run: 
-
-```bash
-pip install "git+https://github.com/panalexeu/horchunk.git"
-```
-
-### Usage 
