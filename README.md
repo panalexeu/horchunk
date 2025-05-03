@@ -20,6 +20,14 @@ To install the package, run:
 pip install "git+https://github.com/panalexeu/horchunk.git"
 ```
 
+### Docs
+
+The process of method benchmarking is demonstrated in [evaluation.ipynb](./docs/evaluation.ipynb).
+
+The process of binary search-based method tuning on data is demonstrated in [tuning.ipynb](./docs/tuning.ipynb).
+
+The usage example is also provided as [notebook](./docs/usage.ipynb).
+
 ### Usage Example 
 
 ```python
@@ -37,42 +45,40 @@ When Caesar retaliated by sending the White Legs raiders to raze New Canaan and 
 splitter = SentenceSplitter(text)
 splits = splitter()
 print(splits)
-# [
-#     "Joshua Graham, also known as the Burned Man and formerly known as the Malpais Legate, is a Mormon missionary 
-# from the settlement of New Canaan and a co-founder of Caesar's Legion as well as its first legate.",
-#     "After three decades of service in the Legion, helping Caesar carry out his conquest of the former state of 
-# Arizona and much of the former American Southwest, Graham's strategic loss in 2277 to the New California Republic 
-# at the First Battle of Hoover Dam resulted in Caesar punishing him by being set on fire and thrown into the Grand 
-# Canyon, only to survive.",
-#     'When Caesar retaliated by sending the White Legs raiders to raze New Canaan and chase the survivors into Zion 
-# Canyon in 2281, Graham rallied the Dead Horses tribe as their war-chief to protect Zion and atone for his 
-# bloodstained past.',
-#     'He appears as the central character in the Fallout: New Vegas add-on Honest Hearts and is mentioned in 
-# Fallout: New Vegas and its add-on Lonesome Road.'
-# ]
-
-print(chunker(splits))
-# [
-#     <Chunk size=3, chars=800, tokens=171, splits=["Joshua Graham, also known as the Burned Man and formerly known 
-# as the Malpais Legate, is a Mormon missionary from the settlement of New Canaan and a co-founder of Caesar's Legion
-# as well as its first legate.", "After three decades of service in the Legion, helping Caesar carry out his conquest
-# of the former state of Arizona and much of the former American Southwest, Graham's strategic loss in 2277 to the 
-# New California Republic at the First Battle of Hoover Dam resulted in Caesar punishing him by being set on fire and
-# thrown into the Grand Canyon, only to survive.", "When Caesar retaliated by sending the White Legs raiders to raze 
-# New Canaan and chase the survivors into Zion Canyon in 2281, Graham rallied the Dead Horses tribe as their 
-# war-chief to protect Zion and atone for his bloodstained past."]/>,
-#     <Chunk size=1, chars=151, tokens=33, splits=["He appears as the central character in the Fallout: New Vegas 
-# add-on Honest Hearts and is mentioned in Fallout: New Vegas and its add-on Lonesome Road."]/>
-# ]
 ```
 
-### Docs
-
-The process of method benchmarking is demonstrated in [evaluation.ipynb](./docs/evaluation.ipynb).
-
-The process of binary search-based method tuning on data is demonstrated in [tuning.ipynb](./docs/tuning.ipynb).
-
-The usage example is also provided as [notebook](./docs/usage.ipynb).
+```html
+[
+    "Joshua Graham, also known as the Burned Man and formerly known as the Malpais Legate, is a Mormon missionary 
+from the settlement of New Canaan and a co-founder of Caesar's Legion as well as its first legate.",
+    "After three decades of service in the Legion, helping Caesar carry out his conquest of the former state of 
+Arizona and much of the former American Southwest, Graham's strategic loss in 2277 to the New California Republic 
+at the First Battle of Hoover Dam resulted in Caesar punishing him by being set on fire and thrown into the Grand 
+Canyon, only to survive.",
+    'When Caesar retaliated by sending the White Legs raiders to raze New Canaan and chase the survivors into Zion 
+Canyon in 2281, Graham rallied the Dead Horses tribe as their war-chief to protect Zion and atone for his 
+bloodstained past.',
+    'He appears as the central character in the Fallout: New Vegas add-on Honest Hearts and is mentioned in 
+Fallout: New Vegas and its add-on Lonesome Road.'
+]
+```
+```python
+print(chunker(splits))
+```
+```html
+[
+    <Chunk size=3, chars=800, tokens=171, splits=["Joshua Graham, also known as the Burned Man and formerly known 
+as the Malpais Legate, is a Mormon missionary from the settlement of New Canaan and a co-founder of Caesar's Legion
+as well as its first legate.", "After three decades of service in the Legion, helping Caesar carry out his conquest
+of the former state of Arizona and much of the former American Southwest, Graham's strategic loss in 2277 to the 
+New California Republic at the First Battle of Hoover Dam resulted in Caesar punishing him by being set on fire and
+thrown into the Grand Canyon, only to survive.", "When Caesar retaliated by sending the White Legs raiders to raze 
+New Canaan and chase the survivors into Zion Canyon in 2281, Graham rallied the Dead Horses tribe as their 
+war-chief to protect Zion and atone for his bloodstained past."]/>,
+    <Chunk size=1, chars=151, tokens=33, splits=["He appears as the central character in the Fallout: New Vegas 
+add-on Honest Hearts and is mentioned in Fallout: New Vegas and its add-on Lonesome Road."]/>
+]
+```
 
 ### Benchmarks
 
