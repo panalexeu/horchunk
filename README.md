@@ -8,7 +8,7 @@ The method was primarily inspired by the percentile-based semantic chunking meth
 [5 Levels Of Text Splitting notebook](https://github.com/FullStackRetrieval-com/RetrievalTutorials/blob/main/tutorials/LevelsOfTextSplitting/5_Levels_Of_Text_Splitting.ipynb).
 
 I would also like to acknowledge the work of Brandon Smith and Anton Troynikov for the development of the 
-[Chunking Evaluation Framewor](https://research.trychroma.com/evaluating-chunking) for RAG systems, which was used 
+[Chunking Evaluation Framework](https://research.trychroma.com/evaluating-chunking) for RAG systems, which was used 
 during the method's development. In addition to the framework, their work presents an overall study of the quality of 
 different chunking methods.
 
