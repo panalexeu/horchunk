@@ -8,11 +8,32 @@ The method was primarily inspired by the percentile-based semantic chunking meth
 [5 Levels Of Text Splitting notebook](https://github.com/FullStackRetrieval-com/RetrievalTutorials/blob/main/tutorials/LevelsOfTextSplitting/5_Levels_Of_Text_Splitting.ipynb).
 
 I would also like to acknowledge the work of Brandon Smith and Anton Troynikov for the development of the 
-[Chunking Evaluation Framework](https://research.trychroma.com/evaluating-chunking) for RAG systems, which was used 
+[Chunking Evaluation Framewor](https://research.trychroma.com/evaluating-chunking) for RAG systems, which was used 
 during the method's development. In addition to the framework, their work presents an overall study of the quality of 
 different chunking methods.
 
 ### Benchmarks
+
+The benchmarking was conducted using the framework proposed in the [Chunking Evaluation Framework](https://research.trychroma.com/evaluating-chunking). Part of the results for other splitting algorithms were also taken from this work.
+
+The embedding model used is **all-MiniLM-L6-v2**, and the number of retrieved chunks was set to 5.
+
+The results for the developed dynamic sliding-window-based semantic chunking method are marked with asterisks.
+
+| Splitting algorithm | Parameters                    | Recall          | Precision      | Precision Ω     | IoU            |
+| ------------------- | ----------------------------- | --------------- | -------------- | --------------- | -------------- |
+| Recursive           | size: 250 t.; overlap: 125 t. | 78.7 ± 39.2     | 4.9 ± 4.5      | 21.9 ± 14.9     | 4.9 ± 4.4      |
+| Token Text          | size: 250 t.; overlap: 125 t. | **82.4 ± 36.2** | 3.6 ± 3.1      | 11.4 ± 6.6      | 3.5 ± 3.1      |
+| Recursive           | size: 250 t.; overlap: 0 t.   | 78.5 ± 39.5     | 5.4 ± 4.9      | 26.7 ± 18.3     | 5.4 ± 4.9      |
+| Token Text          | size: 250 t.; overlap: 0 t.   | 77.1 ± 39.3     | 3.3 ± 3.0      | 16.4 ± 10.3     | 3.3 ± 3.0      | 
+| Recursive           | size: 200 t.; overlap: 0 t.   | 75.7 ± 40.7     | 6.5 ± 6.2      | 31.2 ± 18.4     | 6.5 ± 6.1      | 
+| Token Text          | size: 200 t.; overlap: 0 t.   | 76.6 ± 38.8     | 4.1 ± 3.7      | 19.1 ± 11.0     | 4.1 ± 3.6      |
+| Kamradt Mod.        | size: 250 t.; overlap: 0 t.   | 63.1 ±  46.9    | 2.7 ± 3.8      | 13.5 ± 13.3     | 2.7 ± 3.8      | 
+| Kamradt Mod.        | size: 200 t.; overlap: 0 t.   | 67.9 ± 44.9     | 3.5 ± 4.1      | 16.0 ± 14.9     | 3.5 ± 4.1      | 
+| Cluster             | size: 250 t.; overlap: 0 t.   | 77.3 ± 38.6     | 6.1 ± 5.1      | 28.6 ± 16.7     | 6.0 ± 5.1      | 
+| Cluster             | size: 200 t.; overlap: 0 t.   | 75.2 ± 39.9     | 7.2 ± 6.1      | 33.6 ± 20.0     | 7.2 ± 6.0      |
+| Dyn. Window*        | $t$: 0.72; $α$: 6.            | 74.9 ± 40.0     | 7.6 ± 6.5      | 35.0 ± 18.3     | 7.4 ± 6.3      |   
+| Dyn. Window*        | $t$: 0.72; $α$: 3.            | 68.7 ± 41.3     | **10.3 ± 8.5** | **48.4 ± 19.8** | **10.0 ± 8.3** |    
 
 ### Implemented Method
 
